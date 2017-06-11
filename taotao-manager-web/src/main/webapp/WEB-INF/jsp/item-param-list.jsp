@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <table class="easyui-datagrid" id="itemParamList" title="商品列表" 
-       data-options="singleSelect:false,collapsible:true,pagination:true,url:'/taotao-manager-web/item/param/list',method:'get',pageSize:30,toolbar:itemParamListToolbar">
+       data-options="singleSelect:false,collapsible:true,pagination:true,url:'/item/param/list',method:'get',pageSize:30,toolbar:itemParamListToolbar">
     <thead>
         <tr>
         	<th data-options="field:'ck',checkbox:true"></th>
@@ -13,7 +13,7 @@
         </tr>
     </thead>
 </table>
-<div id="itemEditWindow" class="easyui-window" title="编辑商品" data-options="modal:true,closed:true,iconCls:'icon-save',href:'/taotao-manager-web/item-edit'" style="width:80%;height:80%;padding:10px;">
+<div id="itemEditWindow" class="easyui-window" title="编辑商品" data-options="modal:true,closed:true,iconCls:'icon-save',href:'/item-edit'" style="width:80%;height:80%;padding:10px;">
 </div>
 <script>
 
@@ -42,7 +42,7 @@
         iconCls:'icon-add',
         handler:function(){
         	TAOTAO.createWindow({
-        		url : "/taotao-manager-web/item-param-add",
+        		url : "/item-param-add",
         	});
         }
     },{
@@ -63,7 +63,7 @@
         	$.messager.confirm('确认','确定删除ID为 '+ids+' 的商品规格吗？',function(r){
         	    if (r){
         	    	var params = {"ids":ids};
-                	$.post("/taotao-manager-web/item/param/delete",params, function(data){
+                	$.post("/item/param/delete",params, function(data){
             			if(data.status == 200){
             				$.messager.alert('提示','删除商品规格成功!',undefined,function(){
             					$("#itemParamList").datagrid("reload");
