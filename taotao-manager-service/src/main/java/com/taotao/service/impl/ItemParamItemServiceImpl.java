@@ -1,15 +1,16 @@
 package com.taotao.service.impl;
 
-import java.awt.image.DataBufferUShort;
-import java.util.Date;
+
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.taotao.common.TaotaoResult;
+import com.taotao.common.JsonUtils;
 import com.taotao.mapper.TbItemParamItemMapper;
 import com.taotao.pojo.TbItemParamItem;
 import com.taotao.pojo.TbItemParamItemExample;
+import com.taotao.pojo.TbItemParamItemExample.Criteria;
 import com.taotao.service.ItemParamItemService;
 @Service
 public class ItemParamItemServiceImpl implements ItemParamItemService {
@@ -18,14 +19,35 @@ public class ItemParamItemServiceImpl implements ItemParamItemService {
 	private TbItemParamItemMapper itemParamItemMapper;
 
 	@Override
-	public TaotaoResult insertItemParamItem(Long itemId, String itemParam) {
-		TbItemParamItem tbItemParamItem =new TbItemParamItem();
-		tbItemParamItem.setItemId(itemId);
-		tbItemParamItem.setParamData(itemParam);
-		tbItemParamItem.setCreated(new Date());
-		tbItemParamItem.setUpdated(new Date());
-		itemParamItemMapper.insert(tbItemParamItem);
-		return TaotaoResult.ok();
+	public String getItemParamByItemId(Long itemId) {
+		TbItemParamItemExample example = new TbItemParamItemExample();
+		Criteria criteria = example.createCriteria();
+		criteria.andItemIdEqualTo(itemId);
+		List<TbItemParamItem> list = itemParamItemMapper.selectByExampleWithBLOBs(example);
+		if(list == null || list.size()==0){
+			return "";
+		}
+		TbItemParamItem tbItemParamItem =list.get(0);
+		String paramData = tbItemParamItem.getParamData();
+		List<Map> jsonList = JsonUtils.jsonToList(paramData, Map.class);
+		StringBuffer sb = new StringBuffer();
+		sb.append("<table cellpadding=\"0\" cellspacing=\"1\" width=\"100%\" border=\"0\" class=\"Ptable\">\n");
+		sb.append("    <tbody>\n");
+		for(Map m1:jsonList) {
+			sb.append("        <tr>\n");
+			sb.append("            <th class=\"tdTitle\" colspan=\"2\">"+m1.get("group")+"</th>\n");
+			sb.append("        </tr>\n");
+			List<Map> list2 = (List<Map>) m1.get("params");
+			for(Map m2:list2) {
+				sb.append("        <tr>\n");
+				sb.append("            <td class=\"tdTitle\">"+m2.get("k")+"</td>\n");
+				sb.append("            <td>"+m2.get("v")+"</td>\n");
+				sb.append("        </tr>\n");
+			}
+		}
+		sb.append("    </tbody>\n");
+		sb.append("</table>");
+		return sb.toString();
 	}
 
 }
